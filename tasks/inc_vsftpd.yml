@@ -1,0 +1,47 @@
+---
+
+# Lets assume we start of with
+#
+# meta_vh_hosts:
+#   - fqdn: example.com
+#     user: [ tom, jerry ]
+#   - fqdn: example.net
+#     user: [ jerry ]
+#   - fqdn: example.org
+# 
+# meta_vh_users:
+#   - { user: tom, pass: "I'mACat" }
+#   - { user: jerry, pass: "I'mAMouse" }
+#
+# From main.yml, we loop over meta_vh_users and include this task, making the first item { user: tom, pass: "I'mACat"}
+# We'll be using a jsmepath query (via the json_query filter), to extract all fqdns in meta_vh_hosts, with which
+# the current item.user is mentioned with. So for tom, we want to get [ example.com ], and for jerry 
+# [ example.com, example.net ]. This is what the following two set_facts do
+
+- set_fact:
+    jmespath_query: '[?user && contains(user, `"{{ item.user }}"`)].{path: join(``,[''{{ meta_vh_default_vhostsroot }}'',fqdn]), owner: ''{{ meta_vh_default_owner }}'', group: ''{{ meta_vh_default_group }}''}'
+
+- set_fact:
+    fqdns: "{{ meta_vh_hosts | to_json | from_json | json_query( jmespath_query ) }}"
+
+- set_fact:
+    sf_vsftpd_users: "{{ sf_vsftpd_users | default({}) | combine( { 'username': item.user, 'password': item.pass, 'bindpath': fqdns } ) }}"
+
+- set_fact:
+    tmp_vsftpd_users: "{{ tmp_vsftpd_users | default([]) + [ sf_vsftpd_users ] }}"
+
+# query explanation:
+# - extract all for which element `user` exists and contains {{ item.user }} (i.e. jerry) in meta_vh_hosts
+# - put together a result in which `path` contains the concatenation of {{ meta_vh_default_vhostsroot }} the found fqdn
+#   * note that `,'," have special meanings. `` denotes for json, ' is a string delimeter, '' is escaped ', " is "
+#   * concatenation is performed by artificially making a list and then joinig it into a string
+# - the to_json | from json | in the 2nd setfact is here due to an ansible bug.
+#   see https://stackoverflow.com/questions/46480104/concatenate-result-element-of-jmespath-multiselect-filter-with-a-variable
+#   and https://github.com/ansible/ansible/issues/27299
+
+- name: "Intermediate product for vsftpd user {{ item.user }} - jsme filter"
+  debug: msg="{{ fqdns }}" verbosity=3
+
+- name: "Intermediate product for vsftpd user {{ item.user }} - one user"
+  debug: msg="{{ sf_vsftpd_users }}" verbosity=1
+

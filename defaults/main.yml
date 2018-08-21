@@ -1,0 +1,26 @@
+---
+meta_vh_default_mail: ''
+meta_vh_default_sslcert: '/etc/ssl/certs/mage-snakeoil.pem'
+meta_vh_default_sslkey: '/etc/ssl/private/mage-snakeoil.key'
+meta_vh_default_vhostsroot: '/var/www/vhosts/'
+meta_vh_default_owner: www-data
+meta_vh_default_group: www-data
+meta_vh_default_runprereq: False
+
+meta_vh_hosts: []
+meta_vh_users: []
+
+###
+### Example values
+###
+
+# meta_vh_hosts:
+#   - fqdn: example.com
+#     user: [ tom, jerry ]
+#   - fqdn: example.net
+#     user: [ jerry ]
+#   - fqdn: example.org
+
+# meta_vh_users:
+#   - { user: tom, pass: "I'mACat" }
+#   - { user: jerry, pass: "I'mAMouse" }

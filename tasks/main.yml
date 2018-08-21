@@ -1,0 +1,54 @@
+---
+# See https://github.com/ansible/ansible/pull/8019
+
+###
+### generate config for mage-apache
+###
+- include: inc_apache.yml
+
+###
+### generate config for mage-vsftpd
+###
+- set_fact:
+    tmp_vsftpd_users: []
+
+- include_tasks: inc_vsftpd.yml
+  with_items: "{{ meta_vh_users }}"
+
+- name: "Final product for vsftpd_users"
+  debug: var=tmp_vsftpd_users verbosity=1
+
+- set_fact:
+    vsftpd_users: "{{ vsftpd_users | default([]) + tmp_vsftpd_users }}"
+
+###
+### do everything
+###
+- name: Ensure documentroot directories are present
+  file:
+    path: "{{ item.documentroot }}"
+    state: directory
+    owner: "{{ meta_vh_default_owner }}"
+    group: "{{ meta_vh_default_group }}"
+    mode: 0775
+    recurse: yes
+  with_items: "{{ apache_vhosts }}"
+
+- name: Include mage-update
+  include_role:
+    name: mage-base-common
+  when: meta_vh_default_runprereq
+
+- name: Include mage-base-common
+  include_role:
+    name: mage-base-common
+  when: meta_vh_default_runprereq
+
+- name: Include mage-apache
+  include_role:
+    name: mage-apache
+
+- name: Include mage-vsftpd
+  include_role:
+    name: mage-vsftpd
+
