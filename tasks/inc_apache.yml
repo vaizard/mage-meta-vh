@@ -4,7 +4,7 @@
   args:
     sf_apache_vhosts:
       - servername: "{{ item.fqdn }}"
-        documentroot: "/var/www/vhosts/{{ item.fqdn | replace('.', '_') }}"
+        documentroot: "/var/www/vhosts/{{ item.fqdn }}"
         email: "{{ item.mail | default(meta_vh_default_mail) }}"
   with_items: "{{ meta_vh_hosts }}"
   register: r_apache_vhosts
@@ -18,7 +18,7 @@
   args:
     sf_apache_vhosts_ssl:
       - servername: "{{ item.fqdn }}"
-        documentroot: "/var/www/vhosts/{{ item.fqdn | replace('.', '_') }}"
+        documentroot: "/var/www/vhosts/{{ item.fqdn }}"
         certificate_file: "{{ item.certificate_file | default('/etc/ssl/certs/mage-snakeoil.pem') }}"
         certificate_key_file: "{{ item.certificate_file | default('/etc/ssl/private/mage-snakeoil.key') }}"
         email: "{{ item.mail | default(meta_vh_default_mail) }}"
