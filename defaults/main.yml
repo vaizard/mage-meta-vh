@@ -3,7 +3,7 @@ meta_vh_default_mail: ''
 meta_vh_default_sslcert: '/etc/ssl/certs/mage-snakeoil.pem'
 meta_vh_default_sslkey: '/etc/ssl/private/mage-snakeoil.key'
 meta_vh_default_vhostsroot: '/var/www/vhosts/'
-meta_vh_default_owner: www-data
+meta_vh_default_owner: ftp
 meta_vh_default_group: www-data
 meta_vh_default_runprereq: False
 
