@@ -19,13 +19,13 @@
 # [ example.com, example.net ]. This is what the following two set_facts do
 
 - set_fact:
-    jmespath_query: '[?user && contains(user, `"{{ item.user }}"`)].{path: join(``,[''{{ meta_vh_default_vhostsroot }}'',fqdn]), owner: ''{{ meta_vh_default_owner }}'', group: ''{{ meta_vh_default_group }}''}'
+    jmespath_query: '[?user && contains(user, `"{{ item.user }}"`)].{path: join(``,[''{{ meta_vh_default_vhostsroot  }}'',fqdn]), owner: ''{{ meta_vh_default_owner }}'', group: ''{{ meta_vh_default_group }}''}'
 
 - set_fact:
     fqdns: "{{ meta_vh_hosts | to_json | from_json | json_query( jmespath_query ) }}"
 
 - set_fact:
-    sf_vsftpd_users: "{{ sf_vsftpd_users | default({}) | combine( { 'username': item.user, 'password': item.pass, 'bindpath': fqdns } ) }}"
+    sf_vsftpd_users: "{{ sf_vsftpd_users | default({}) | combine( { 'username': item.user, 'password': item.pass, 'bindpath': fqdns  } ) }}"
 
 - set_fact:
     tmp_vsftpd_users: "{{ tmp_vsftpd_users | default([]) + [ sf_vsftpd_users ] }}"

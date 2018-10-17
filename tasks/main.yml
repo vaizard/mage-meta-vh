@@ -28,8 +28,6 @@
   file:
     path: "{{ item.documentroot }}"
     state: directory
-    owner: "{{ meta_vh_default_owner }}"
-    group: "{{ meta_vh_default_group }}"
     mode: 0775
     recurse: yes
   with_items: "{{ apache_vhosts }}"
@@ -52,3 +50,12 @@
   include_role:
     name: mage-vsftpd
 
+- name: Ensure documentroot directories have correct owner, group
+  file:
+    path: "{{ item.documentroot }}"
+    state: directory
+    owner: "{{ meta_vh_default_owner }}"
+    group: "{{ meta_vh_default_group }}"
+    mode: 0775
+    recurse: yes
+  with_items: "{{ apache_vhosts }}"
